@@ -11,6 +11,26 @@ const config: webpack.Configuration = {
         root: './src/pages/root.tsx',
         root2: './src/pages/root2.tsx',
     },
+    module: {
+        rules: [
+            {
+                test: /\.tsx?$/,
+                use: 'ts-loader',
+                exclude: /node_modules/,
+            },
+        ],
+    },
+    resolve: {
+        extensions: ['.tsx', '.ts', '.js'],
+        fallback: {
+            "buffer": require.resolve("buffer"),
+            "stream": false,
+        },
+    },
+    node: false,
+    externals: {
+        "crypto-browserify": 'crypto-browserify',
+    },
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: '[name].[contenthash].js',
@@ -24,14 +44,8 @@ const config: webpack.Configuration = {
             open: false,
         }),
     ],
-    resolve: {
-        fallback: {
-            "buffer": require.resolve("buffer"),
-            "stream": false,
-        },
-    },
-    module: {
-    },
+
+
 };
 
 export default config;
