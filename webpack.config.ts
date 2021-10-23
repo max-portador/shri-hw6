@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as webpack from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import StatoscopePlugin from '@statoscope/webpack-plugin';
+const StatoscopeWebpackPlugin = require('@statoscope/webpack-plugin').default;
 
 import ModuleLogger from './plugins/moduleLogger';
 
@@ -38,9 +38,10 @@ const config: webpack.Configuration = {
     plugins: [
         new HtmlWebpackPlugin(),
         new ModuleLogger(),
-        new StatoscopePlugin({
+        new StatoscopeWebpackPlugin({
             saveStatsTo: 'stats.json',
             saveOnlyStats: false,
+            statsOptions: { all: true, source: false },
             open: false,
         }),
     ],
