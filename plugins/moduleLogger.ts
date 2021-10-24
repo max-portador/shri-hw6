@@ -60,9 +60,12 @@ function display(filesByDirectory: string[][]) {
         (array: any[], item) => array.concat(item),
         [],
     );
+    //удаляем корневой файл из массива
+    allFiles.shift()
 
     process.stdout.write(chalk.green('\n*** Unused Plugin ***\n\n'));
     process.stdout.write(chalk.red([...allFiles]));
+
     fs.writeFileSync('./unused', JSON.stringify(allFiles))
 
     return allFiles;
