@@ -5,15 +5,6 @@ const fs = require("fs")
 const deglob = require('deglob');
 const chalk = require('chalk');
 
-function searchFiles(directory: string, ignoreGlobPatterns: any[] = [], useGitIgnore: boolean = true) {
-    const config = { ignore: ignoreGlobPatterns, cwd: directory, useGitIgnore };
-    return new Promise((resolve, reject) => {
-        deglob('**/*', config, (err: any, files: any) => {
-            if (err) reject(err);
-            else resolve(files);
-        });
-    });
-}
 
 class ModuleLogger{
     sourceDirectories:string[]
@@ -33,16 +24,28 @@ class ModuleLogger{
 
         const checkUnused = (compilation: Compilation) => {
             // Files used by Webpack during compilation
-            const usedModules = Array.from(compilation.fileDependencies)
-                .filter(file => this.sourceDirectories.some(dir => file.indexOf(dir) !== -1))
-                .reduce((obj, item) => Object.assign(obj, { [item]: true }), {});
-            // Go through sourceDirectories to find all source files
+            const allDependencies = Array.from(compilation.fileDependencies)
+            const sourceDependencies = allDependencies.filter(file => this.sourceDirectories.some(dir => file.indexOf(dir) !== -1))
+            // Зависимости внутри sourceDirectories
+
+            const usedModules = sourceDependencies.reduce((obj, item) => Object.assign(obj, { [item]: true }), {})
+            // преобразуем в объект c парами {dir: true }
             Promise.all(
                 this.sourceDirectories.map(directory => searchFiles(directory, this.exclude, this.useGitIgnore)),
+                // обходим все дерево зависимостей и возвращаем массив из массивов:
+                // [
+                // [usedModule1, зависимость 1.1,  зависимость 1.2...],
+                // [usedModule2, зависимость 2.1,  зависимость 2.2...],
+                // ]
             )
-                // Find unused source files
-                // @ts-ignore
-                .then(files => files.map(array => array.filter(file => !usedModules[file])))
+
+                .then(files => {
+                    // console.log("Files after deglob")
+                    // console.log(files.join('\n'))
+                    // @ts-ignore
+                    return  files.map(array => array.filter(file => !usedModules[file]))
+                    // удаляем элементы, которые попали в usedModules
+                })
                 .then(display.bind(this))
         };
 
@@ -54,6 +57,19 @@ class ModuleLogger{
 }
 
 export default ModuleLogger;
+
+
+// Функция обходит дерево зависимостей и возвращает список директорий
+function searchFiles(directory: string, ignoreGlobPatterns: any[] = [], useGitIgnore: boolean = true) {
+    const config = { ignore: ignoreGlobPatterns, cwd: directory, useGitIgnore };
+    return new Promise((resolve, reject) => {
+        deglob('**/*', config, (err: any, files: any) => {
+            if (err) reject(err);
+            else resolve(files);
+        });
+    });
+}
+
 
 function display(filesByDirectory: string[][]) {
     const allFiles = filesByDirectory.reduce(
