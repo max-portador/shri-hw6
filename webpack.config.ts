@@ -3,6 +3,8 @@ import * as webpack from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ModuleLogger from './plugins/moduleLogger';
 import StatoscopeWebpackPlugin from '@statoscope/webpack-plugin';
+const TerserPlugin = require("terser-webpack-plugin");
+
 
 const config: webpack.Configuration = {
     mode: 'production',
@@ -35,13 +37,27 @@ const config: webpack.Configuration = {
         filename: '[name].[contenthash].js',
     },
     plugins: [
-        new HtmlWebpackPlugin(),
+        new HtmlWebpackPlugin({
+            filename: "./src/index.html"
+        }),
         new ModuleLogger({
             directories: [path.join(__dirname, 'src')],
             root: __dirname,
         }),
         new StatoscopeWebpackPlugin()
     ],
+    optimization: {
+        concatenateModules: true,
+        innerGraph: false,
+        mangleExports: 'size',
+        mangleWasmImports: true,
+        minimize: true,
+        minimizer: [
+            new TerserPlugin({
+                parallel: true,
+            }),
+        ],
+    },
 
 
 };
