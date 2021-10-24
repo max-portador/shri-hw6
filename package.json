@@ -5,13 +5,15 @@
   "scripts": {
     "build": "npm run build_webpack && npm run validate && rm -rf stats.json",
     "build_webpack": "rm -rf ./dist && webpack --mode=production --node-env=production",
-    "validate": "npx statoscope validate -i stats.json --config=./statoscope.config.js"
+    "validate": "npx statoscope validate -i tats.json --config=./statoscope.config.js"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@statoscope/cli": "^5.14.1",
-    "@statoscope/stats-validator-plugin-webpack": "^5.14.1",
+    "@statoscope/stats-validator-plugin-webpack": "^5.15.0",
+    "@statoscope/stats-validator-reporter-console": "^5.14.1",
+    "@statoscope/stats-validator-reporter-stats-report": "^5.14.1",
     "@statoscope/webpack-plugin": "^5.14.1",
     "@types/lodash": "^4.14.170",
     "@types/node": "^15.12.4",
@@ -33,6 +35,9 @@
     "@statoscope/webpack-model": "^5.14.1",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.0",
-    "react": "^17.0.2"
+    "deglob": "^4.0.1",
+    "es6-promisify": "^7.0.0",
+    "react": "^17.0.2",
+    "unused-webpack-plugin": "^2.4.0"
   }
 }
