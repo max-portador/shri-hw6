@@ -8,15 +8,19 @@ const TerserPlugin = require("terser-webpack-plugin")
 
 
 const webpackPlugins = [
-    new HtmlWebpackPlugin({
-        filename: './src/index.html'
-    }),
+    // new HtmlWebpackPlugin({
+    //     filename: './src/index.html'
+    // }),
     new ModuleLogger({
         directories: [path.join(__dirname, 'src')],
         root: __dirname,
         exclude: [path.join(__dirname, 'src', 'index.html')]
     }),
-    new StatoscopeWebpackPlugin()
+    new StatoscopeWebpackPlugin({
+        saveStatsTo: 'stats.json',
+        saveOnlyStats: false,
+        open: false,
+    })
 ]
 
 const config: webpack.Configuration = {
@@ -30,9 +34,26 @@ const config: webpack.Configuration = {
         rules: [
             {
                 test: /\.tsx?$/,
-                use: 'ts-loader',
+                use: [
+                    {
+                        loader: 'ts-loader',
+                        options: {
+                            transpileOnly: true,
+                        },
+                    },
+                ],
                 exclude: /node_modules/,
             },
+            {
+                test: /\.m?js$/,
+                exclude: /(node_modules|bower_components)/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['@babel/preset-env']
+                    }
+                }
+            }
         ],
     },
     resolve: {
@@ -42,7 +63,6 @@ const config: webpack.Configuration = {
             'stream': false,
         },
     },
-    node: false,
     externals: {
         'crypto-browserify': 'crypto-browserify',
     },
@@ -52,17 +72,8 @@ const config: webpack.Configuration = {
     },
     plugins: webpackPlugins,
     devtool: "eval-source-map",
-    optimization: {
-        concatenateModules: true,
-        innerGraph: false,
-        mangleExports: 'size',
-        mangleWasmImports: true,
-        minimize: true,
-        minimizer: [
-            new TerserPlugin({
-                parallel: true,
-            }),
-        ],
+    node: {
+        global: false,
     },
 }
 

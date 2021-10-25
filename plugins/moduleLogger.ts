@@ -1,5 +1,4 @@
-import { Compilation, Compiler } from 'webpack';
-import { keys } from 'lodash';
+import { Compilation, Compiler, WebpackError } from 'webpack';
 const fs = require("fs")
 const deglob = require('deglob');
 const chalk = require('chalk');
@@ -22,7 +21,7 @@ class ModuleLogger{
     apply(compiler: Compiler){
 
         const checkUnused = (compilation: Compilation) => {
-            // Files used by Webpack during compilation
+            // Files used by Webpack during
             const allDependencies = Array.from(compilation.fileDependencies)
             const sourceDependencies = allDependencies
                 .filter(file => this.sourceDirectories.some(dir => file.indexOf(dir) !== -1))
@@ -47,7 +46,10 @@ class ModuleLogger{
         };
 
         if (compiler.hooks && compiler.hooks.emit) {
-            compiler.hooks.emit.tapAsync('ModuleLogger', checkUnused);
+            compiler.hooks.emit.tap('ModuleLogger', checkUnused);
+        } else {
+            //@ts-ignore
+            compiler.plugin('emit', checkUnused);
         }
     }
 
