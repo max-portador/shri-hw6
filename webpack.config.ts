@@ -1,9 +1,9 @@
-import * as path from 'path';
-import * as webpack from 'webpack';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
-import ModuleLogger from './plugins/moduleLogger';
-import StatoscopeWebpackPlugin from '@statoscope/webpack-plugin';
-const TerserPlugin = require("terser-webpack-plugin");
+import * as path from 'path'
+import * as webpack from 'webpack'
+import HtmlWebpackPlugin from 'html-webpack-plugin'
+import ModuleLogger from './plugins/moduleLogger'
+import StatoscopeWebpackPlugin from '@statoscope/webpack-plugin'
+const TerserPlugin = require("terser-webpack-plugin")
 
 
 const config: webpack.Configuration = {
@@ -24,13 +24,13 @@ const config: webpack.Configuration = {
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
         fallback: {
-            "buffer": require.resolve("buffer"),
-            "stream": false,
+            'buffer': require.resolve("buffer"),
+            'stream': false,
         },
     },
     node: false,
     externals: {
-        "crypto-browserify": 'crypto-browserify',
+        'crypto-browserify': 'crypto-browserify',
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
@@ -38,11 +38,12 @@ const config: webpack.Configuration = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            filename: "./src/index.html"
+            filename: './src/index.html'
         }),
         new ModuleLogger({
             directories: [path.join(__dirname, 'src')],
             root: __dirname,
+            exclude: [path.join(__dirname, 'src', 'index.html')]
         }),
         new StatoscopeWebpackPlugin()
     ],
@@ -62,4 +63,4 @@ const config: webpack.Configuration = {
 
 };
 
-export default config;
+export default config
